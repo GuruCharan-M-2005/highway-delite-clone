@@ -11,7 +11,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "init:db": "ts-node db/initAndSeed.ts"
+    "init:db": "node db/initAndSeed.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
