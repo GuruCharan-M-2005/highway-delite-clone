@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ const Checkout = () => {
   const [experience, setExperience] = useState<Experience | null>(null);
 
   // Fetch real experience data from backend
-  useState(() => {
+  useEffect(() => {
     const loadExperience = async () => {
       try {
         const res = await fetch(`/api/experiences/${id}`);
@@ -36,8 +36,8 @@ const Checkout = () => {
         navigate("/");
       }
     };
-    loadExperience();
-  });
+    if(id) loadExperience();
+  },[]);
 
   if (!experience || !bookingDetails.date || !bookingDetails.time_slot_id) {
     return null;
