@@ -26,7 +26,7 @@ const Checkout = () => {
   useState(() => {
     const loadExperience = async () => {
       try {
-        const res = await fetch(`/experiences/${id}`);
+        const res = await fetch(`/api/experiences/${id}`);
         if (!res.ok) throw new Error("Failed to fetch experience");
         const data = await res.json();
         setExperience(data);
@@ -65,7 +65,7 @@ const Checkout = () => {
     setUserInfo({ name, email, phone });
 
     try {
-      const response = await fetch("/bookings", {
+      const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

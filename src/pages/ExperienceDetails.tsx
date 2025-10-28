@@ -20,7 +20,7 @@ const ExperienceDetails = () => {
 
     const fetchExperience = async () => {
       try {
-        const res = await fetch(`/experiences/${id}`);
+        const res = await fetch(`/api/experiences/${id}`);
         if (!res.ok) throw new Error("Failed to load experience details");
         const data = await res.json();
         setExperience(data);

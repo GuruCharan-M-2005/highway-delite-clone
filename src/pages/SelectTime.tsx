@@ -25,7 +25,7 @@ const SelectTime = () => {
       setLoading(true);
       try {
         const dateStr = bookingDetails.date;
-        const res = await fetch(`/experiences/${id}?date=${dateStr}`);
+        const res = await fetch(`/api/experiences/${id}?date=${dateStr}`);
         const data = await res.json();
 
         if (!res.ok) throw new Error(data.error || "Failed to load experience");

@@ -23,7 +23,7 @@ const SelectDate = () => {
     const fetchExperience = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/experiences/${id}`);
+        const res = await fetch(`/api/experiences/${id}`);
         const data = await res.json();
 
         if (!res.ok) throw new Error(data.error || "Failed to load experience");

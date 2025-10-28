@@ -14,7 +14,7 @@ const Index = () => {
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
-        const res = await fetch("/experiences");
+        const res = await fetch("/api/experiences");
         if (!res.ok) throw new Error("Failed to load experiences");
         const data = await res.json();
         setExperiences(data);

@@ -21,7 +21,7 @@ const Confirmation = () => {
     const fetchBooking = async () => {
       try {
         if (!bookingId) throw new Error("Missing booking ID");
-        const res = await fetch(`/bookings/${bookingId}`);
+        const res = await fetch(`/api/bookings/${bookingId}`);
         if (!res.ok) throw new Error("Failed to fetch booking details");
         const data = await res.json();
         setBooking(data);
