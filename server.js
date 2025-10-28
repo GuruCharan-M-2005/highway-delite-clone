@@ -74,7 +74,7 @@ const frontendDir = path.join(__dirname, "dist");
 app.use(express.static(frontendDir));
 
 // Fallback to index.html (for React Router)
-app.get("/*", (req, res) => {
+app.get("/.*/", (req, res) => {
   if (req.path.startsWith("/api")) return res.status(404).send("API route not found");
   res.sendFile(path.join(frontendDir, "index.html"));
 });
