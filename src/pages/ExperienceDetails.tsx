@@ -23,7 +23,7 @@ const ExperienceDetails = () => {
         const res = await fetch(`/api/experiences/${id}`);
         if (!res.ok) throw new Error("Failed to load experience details");
         const data = await res.json();
-        setExperience(data);
+        setExperience(data.experience);
       } catch (err: any) {
         console.error("Error fetching experience:", err);
         setError("Unable to load experience. Please try again later.");
