@@ -34,6 +34,14 @@ app.get("/api/experiences/:id", async (req, res) => {
   const slots = (
     await pool.query("SELECT * FROM timeslots WHERE experience_id=$1 AND date=$2 ORDER BY time", [id, date])
   ).rows;
+  slots = slots.map(s => ({
+    id: s.id,
+    time: s.time,
+    available: s.spots_left > 0,
+    spotsLeft: s.spots_left,
+    total: s.total_spots,
+  }));
+
   res.json({ experience: exp, date, timeslots: slots });
 });
 
