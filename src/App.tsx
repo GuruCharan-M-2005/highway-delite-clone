@@ -2,9 +2,35 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import Home from "./pages/Home";
+import ExperienceDetails from "./pages/ExperienceDetails";
+import SelectDate from "./pages/SelectDate";
+import SelectTime from "./pages/SelectTime";
+import Checkout from "./pages/Checkout";
+import Confirmation from "./pages/Confirmation";
 import NotFound from "./pages/NotFound";
+
+const RouteManager = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/experience/:id" element={<ExperienceDetails />} />
+      <Route path="/experience/:id/select-date" element={<SelectDate />} />
+      <Route path="/experience/:id/select-time" element={<SelectTime />} />
+      <Route path="/experience/:id/checkout" element={<Checkout />} />
+      <Route path="/experience/:id/confirmation" element={<Confirmation />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
 
 const queryClient = new QueryClient();
 
@@ -14,11 +40,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <RouteManager />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
