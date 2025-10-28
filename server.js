@@ -31,10 +31,10 @@ app.get("/api/experiences/:id", async (req, res) => {
   const { id } = req.params;
   const date = req.query.date || new Date().toISOString().slice(0, 10);
   const exp = (await pool.query("SELECT * FROM experiences WHERE id=$1", [id])).rows[0];
-  const slots = (
+  const pre_slots = (
     await pool.query("SELECT * FROM timeslots WHERE experience_id=$1 AND date=$2 ORDER BY time", [id, date])
   ).rows;
-  slots = slots.map(s => ({
+  slots = pre_slots.map(s => ({
     id: s.id,
     time: s.time,
     available: s.spots_left > 0,
