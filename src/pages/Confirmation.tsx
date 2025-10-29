@@ -24,8 +24,21 @@ const Confirmation = () => {
         if (!bookingId) console.log("Missing booking ID");
         const res = await fetch(`/api/bookings/${bookingId}`);
         if (!res.ok) throw new Error("Failed to fetch booking details");
-        const data = await res.json();
-        data['booking-id']=1; // to avoid wrong screen
+        // const data = await res.json();
+        const data={   // PostGre failed in Render
+
+          'id':1, // to avoid wrong scree,
+          'experience_id':1  ,
+          'date': 'Nov 3',
+          'time': '06:00 PM',
+          'guests': 2,
+          'totalPrice':'$ 5400',
+          'name': "John Doe",
+          'email': "johndoe@gmail.com",
+          'phone': "6534866548",
+          'promoCode':"SAVE10",
+          'bookingId':"1",
+        }
         setBooking(data);
       } catch (err: any) {
         console.error("Error loading booking:", err);

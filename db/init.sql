@@ -41,5 +41,6 @@ CREATE TABLE IF NOT EXISTS  bookings (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+
 -- Optional index to speed up double-book queries
 CREATE INDEX IF NOT EXISTS  idx_bookings_timeslot ON bookings(timeslot_id, date);
