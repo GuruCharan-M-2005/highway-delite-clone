@@ -32,6 +32,7 @@ export interface BookingDetails {
   date: string;          // ISO string (yyyy-mm-dd)
   time: string;  // reference to selected slot
   guests: number;        // number of participants
+  totalPrice:number;
 }
 
 /**
