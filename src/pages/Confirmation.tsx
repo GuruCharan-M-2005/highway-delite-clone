@@ -24,6 +24,7 @@ const Confirmation = () => {
         const res = await fetch(`/api/bookings/${bookingId}`);
         if (!res.ok) throw new Error("Failed to fetch booking details");
         const data = await res.json();
+        data['booking-id']=1; // to avoid wrong screen
         setBooking(data);
       } catch (err: any) {
         console.error("Error loading booking:", err);
