@@ -48,12 +48,22 @@ app.get("/api/experiences/:id", async (req, res) => {
 // Book a slot
 app.post("/api/bookings", async (req, res) => {
   const { experience_id, timeslot_id, date, time, customer_name, customer_email, seats } = req.body;
-
-  if (!experience_id || !timeslot_id || !customer_name || !customer_email)
+  if (!experience_id || !timeslot_id || !customer_name || !customer_email){
     return res.status(400).json({ error: "Missing fields" });
-
+  }
   return res.status(201).json({ message: "Booked successfully" });
 });
+
+// To track booking
+app.get("/api/bookings/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ error: "Booking ID is required" });
+  }    
+  return res.status(200).json({ message: "Booking Completed" });
+});
+
+// To book a slot
 // app.post("/api/bookings", async (req, res) => {
 //   const { experience_id, timeslot_id, date, time, customer_name, customer_email, seats } = req.body;
 //   if (!experience_id || !timeslot_id || !customer_name || !customer_email) {
@@ -82,6 +92,32 @@ app.post("/api/bookings", async (req, res) => {
 //   } catch (err) {
 //     await client.query("ROLLBACK");
 //     return res.status(400).json({ error: err.message });
+//   } finally {
+//     client.release();
+//   }
+// });
+
+// To track booking ID
+// app.get("/api/bookings/:id", async (req, res) => {
+//   const { id } = req.params;
+//   // Validate input
+//   if (!id) {
+//     return res.status(400).json({ error: "Booking ID is required" });
+//   }
+//   const client = await pool.connect();
+//   try {
+//     // Look up the booking
+//     const result = await client.query("SELECT * FROM bookings WHERE id = $1", [id]);
+//     const booking = result.rows[0];
+
+//     if (!booking) {
+//       return res.status(404).json({ error: "Booking not found" });
+//     }
+//     // ✅ Found — return booking details
+//     return res.status(200).json({ booking });
+//   } catch (err) {
+//     console.error("Error fetching booking:", err);
+//     return res.status(500).json({ error: "Internal server error" });
 //   } finally {
 //     client.release();
 //   }
