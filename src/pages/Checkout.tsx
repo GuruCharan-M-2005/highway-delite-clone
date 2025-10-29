@@ -41,7 +41,7 @@ const Checkout = () => {
     if(id) loadExperience();
   },[]);
 
-  if (!experience || !bookingDetails.date || !bookingDetails.time_slot_id) {
+  if (!experience || !bookingDetails.date || !bookingDetails.time) {
     return null;
   }
 
@@ -75,7 +75,7 @@ const Checkout = () => {
           time:bookingDetails.time, 
           customer_name:name, 
           customer_email:email, 
-          amount:totalPrice
+          amount:totalPrice,
         }),
       });
 
@@ -188,7 +188,7 @@ const Checkout = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Time</span>
-                    <span className="font-medium">{bookingDetails.time_slot_id}</span>
+                    <span className="font-medium">{bookingDetails.time}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Quantity</span>

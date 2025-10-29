@@ -107,7 +107,7 @@ const Confirmation = () => {
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Time</span>
-                  <p className="font-semibold">{booking.time_slot_id}</p>
+                  <p className="font-semibold">{booking.time}</p>
                 </div>
               </div>
 
