@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Experience } from "@/types/booking";
 
 const Checkout = () => {
+  
   const { id } = useParams();
   const navigate = useNavigate();
   const { bookingDetails, userInfo, promoCode, setUserInfo, setPromoCode } = useBooking();
@@ -21,6 +22,14 @@ const Checkout = () => {
   const [promoApplied, setPromoApplied] = useState(!!promoCode);
   const [isProcessing, setIsProcessing] = useState(false);
   const [experience, setExperience] = useState<Experience | null>(null);
+
+  // 👇 Redirect to "/" if user refreshed the page
+  useEffect(() => {
+    const navType = performance.getEntriesByType("navigation")[0]?.type;
+    if (navType === "reload") {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
 
   // Fetch real experience data from backend
   useEffect(() => {

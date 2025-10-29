@@ -21,15 +21,6 @@ import NotFound from "@/pages/NotFound";
 
 const RouteManager = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-
-  // 👇 Redirect to "/" if user refreshed the page
-  useEffect(() => {
-    const navType = performance.getEntriesByType("navigation")[0]?.type;
-    if (navType === "reload") {
-      navigate("/", { replace: true });
-    }
-  }, [navigate]);
 
   // 👇 Scroll to top when navigating to new routes
   useEffect(() => {

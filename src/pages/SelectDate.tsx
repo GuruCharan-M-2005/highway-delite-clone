@@ -17,6 +17,14 @@ const SelectDate = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [loading, setLoading] = useState(true);
 
+  // 👇 Redirect to "/" if user refreshed the page
+  useEffect(() => {
+    const navType = performance.getEntriesByType("navigation")[0]?.type;
+    if (navType === "reload") {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
   useEffect(() => {
     if (!id) return;
 

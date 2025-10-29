@@ -15,6 +15,14 @@ const ExperienceDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 👇 Redirect to "/" if user refreshed the page
+  useEffect(() => {
+    const navType = performance.getEntriesByType("navigation")[0]?.type;
+    if (navType === "reload") {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
   useEffect(() => {
     if (!id) return;
 
