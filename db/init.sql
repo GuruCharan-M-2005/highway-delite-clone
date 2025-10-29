@@ -1,6 +1,9 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- db/init.sql
+DROP TABLE IF EXISTS bookings CASCADE;
+DROP TABLE IF EXISTS timeslots CASCADE;
+DROP TABLE IF EXISTS experiences CASCADE;
 
 CREATE TABLE IF NOT EXISTS experiences (
   id TEXT PRIMARY KEY,
@@ -33,6 +36,7 @@ CREATE TABLE IF NOT EXISTS  bookings (
   customer_name TEXT NOT NULL,
   customer_email TEXT NOT NULL,
   seats INTEGER NOT NULL CHECK (seats > 0),
+  amount INTEGER NOT NULL,
   promo_code TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );

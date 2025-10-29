@@ -76,12 +76,13 @@ const Checkout = () => {
           time:bookingDetails.time_slot_id, 
           customer_name:name, 
           customer_email:email, 
+          amount:totalPrice
         }),
       });
 
       if (!response.ok) throw new Error("Booking failed");
       const data = await response.json();
-      data['bookingId']=1;
+      // data['bookingId']=1;
       toast.success("Booking successful!");
       navigate(`/confirmation/${data.bookingId}`);
     } catch (err) {
