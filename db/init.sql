@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- db/init.sql
 
-CREATE TABLE experiences (
+CREATE TABLE IF NOT EXISTS experiences (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
@@ -14,7 +14,7 @@ CREATE TABLE experiences (
   reviews INTEGER
 );
 
-CREATE TABLE timeslots (
+CREATE TABLE IF NOT EXISTS  timeslots (
   id TEXT PRIMARY KEY,
   experience_id TEXT NOT NULL REFERENCES experiences(id) ON DELETE CASCADE,
   date DATE NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE timeslots (
   UNIQUE(experience_id, date, time)
 );
 
-CREATE TABLE bookings (
+CREATE TABLE IF NOT EXISTS  bookings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   experience_id TEXT NOT NULL REFERENCES experiences(id),
   timeslot_id TEXT NOT NULL REFERENCES timeslots(id),
@@ -38,4 +38,4 @@ CREATE TABLE bookings (
 );
 
 -- Optional index to speed up double-book queries
-CREATE INDEX idx_bookings_timeslot ON bookings(timeslot_id, date);
+CREATE INDEX IF NOT EXISTS  idx_bookings_timeslot ON bookings(timeslot_id, date);
