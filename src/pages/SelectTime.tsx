@@ -17,7 +17,7 @@ const SelectTime = () => {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>();
-z
+
   useEffect(() => {
     if (!id || !bookingDetails.date) return;
 
