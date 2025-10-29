@@ -73,7 +73,7 @@ const Checkout = () => {
           experience_id:id,
           timeslot_id:bookingDetails.time_slot_id, 
           date:bookingDetails.date, 
-          time:bookingDetails.time_slot_id, 
+          time:bookingDetails.time, 
           customer_name:name, 
           customer_email:email, 
           amount:totalPrice
