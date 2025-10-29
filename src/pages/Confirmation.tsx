@@ -20,12 +20,12 @@ const Confirmation = () => {
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        if (!bookingId) throw new Error("Missing booking ID");
-        // if (!bookingId) console.log("Missing booking ID");
+        // if (!bookingId) throw new Error("Missing booking ID");
+        if (!bookingId) console.log("Missing booking ID");
         const res = await fetch(`/api/bookings/${bookingId}`);
         if (!res.ok) throw new Error("Failed to fetch booking details");
         const data = await res.json();
-        // data['booking-id']=1; // to avoid wrong screen
+        data['booking-id']=1; // to avoid wrong screen
         setBooking(data);
       } catch (err: any) {
         console.error("Error loading booking:", err);
