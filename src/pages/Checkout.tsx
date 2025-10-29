@@ -3,11 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, Calendar, Clock, Users, Tag } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useBooking } from "@/hooks/useBooking";
 import { toast } from "sonner";
 import { Experience } from "@/types/booking";
+import { Header } from "@/components/Header";
 
 const Checkout = () => {
   const { id } = useParams();
@@ -16,11 +18,11 @@ const Checkout = () => {
 
   const [name, setName] = useState(userInfo.name || "");
   const [email, setEmail] = useState(userInfo.email || "");
-  const [phone, setPhone] = useState(userInfo.phone || "");
   const [promoInput, setPromoInput] = useState(promoCode || "");
   const [promoApplied, setPromoApplied] = useState(!!promoCode);
   const [isProcessing, setIsProcessing] = useState(false);
   const [experience, setExperience] = useState<Experience | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // Fetch real experience data from backend
   useEffect(() => {
@@ -43,11 +45,10 @@ const Checkout = () => {
     return null;
   }
 
-  const basePrice = experience.price * (bookingDetails.guests || 1);
-  const discount = promoApplied && promoCode
-    ? basePrice * 0.1 // optional: backend should verify real promo
-    : 0;
-  const totalPrice = basePrice - discount;
+  const subtotal = experience.price * (bookingDetails.guests || 1);
+  const discount = promoApplied && promoCode ? subtotal * 0.1 : 0;
+  const tax = (subtotal - discount) * 0.18;
+  const totalPrice = subtotal - discount + tax;
 
   const handleApplyPromo = () => {
     if (promoInput.trim().toUpperCase() === "SAVE10") {
@@ -62,7 +63,7 @@ const Checkout = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    setUserInfo({ name, email, phone });
+    setUserInfo({ name, email, phone: "" });
 
     try {
       const response = await fetch("/api/bookings", {
@@ -75,16 +76,6 @@ const Checkout = () => {
           time:bookingDetails.time_slot_id, 
           customer_name:name, 
           customer_email:email, 
-          // seats: 
-          // experienceId: id,
-          // name,
-          // email,
-          // phone,
-          // date: bookingDetails.date,
-          // timeSlot: bookingDetails.time_slot_id,
-          // guests: bookingDetails.guests || 1,
-          // promoCode,
-          // totalPrice,
         }),
       });
 
@@ -101,13 +92,15 @@ const Checkout = () => {
     }
   };
 
-  const formValid = name && email && phone;
+  const formValid = name && email && agreedToTerms;
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
+      
       <header className="border-b">
         <div className="container mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={() => navigate(`/experience/${id}/select-time`)}>
+          <Button variant="ghost" onClick={() => navigate(`/experience/${id}`)}>
             <ChevronLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
@@ -126,19 +119,16 @@ const Checkout = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -156,6 +146,20 @@ const Checkout = () => {
                     </div>
                   </div>
 
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="terms" 
+                      checked={agreedToTerms}
+                      onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                    />
+                    <label
+                      htmlFor="terms"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Agree with T&C
+                    </label>
+                  </div>
+
                   <Button type="submit" size="lg" className="w-full" disabled={!formValid || isProcessing}>
                     {isProcessing ? "Processing..." : "Complete Booking"}
                   </Button>
@@ -171,48 +175,54 @@ const Checkout = () => {
                 <CardTitle>Booking Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="aspect-video w-full overflow-hidden rounded-lg">
-                  <img src={experience.image} alt={experience.title} className="w-full h-full object-cover" />
-                </div>
-
-                <h3 className="font-semibold text-lg">{experience.title}</h3>
+                <h3 className="font-semibold text-lg mb-3">{experience.title}</h3>
 
                 <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    <span>{bookingDetails.date.toString()}</span>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Experience</span>
+                    <span className="font-medium">{experience.title}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    <span>{bookingDetails.time_slot_id}</span>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Date</span>
+                    <span className="font-medium">{bookingDetails.date}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Users className="w-4 h-4" />
-                    <span>{bookingDetails.guests || 1} guest(s)</span>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Time</span>
+                    <span className="font-medium">{bookingDetails.time_slot_id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Quantity</span>
+                    <span className="font-medium">{bookingDetails.guests || 1}</span>
                   </div>
                 </div>
 
                 <div className="border-t pt-4 space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>${basePrice.toFixed(2)}</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="font-medium">${subtotal.toFixed(2)}</span>
                   </div>
 
                   {discount > 0 && (
-                    <div className="flex justify-between text-accent">
-                      <div className="flex items-center gap-1">
-                        <Tag className="w-4 h-4" />
-                        <span>Discount</span>
-                      </div>
+                    <div className="flex justify-between text-sm text-accent">
+                      <span>Discount (10%)</span>
                       <span>-${discount.toFixed(2)}</span>
                     </div>
                   )}
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Tax (18%)</span>
+                    <span className="font-medium">${tax.toFixed(2)}</span>
+                  </div>
 
                   <div className="flex justify-between font-bold text-lg border-t pt-2">
                     <span>Total</span>
                     <span>${totalPrice.toFixed(2)}</span>
                   </div>
                 </div>
+
+                <Button type="submit" size="lg" className="w-full" disabled={!formValid || isProcessing}>
+                  {isProcessing ? "Processing..." : "Confirm"}
+                </Button>
               </CardContent>
             </Card>
           </div>

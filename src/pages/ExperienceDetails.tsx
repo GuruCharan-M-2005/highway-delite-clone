@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Star, MapPin, Clock, ChevronLeft, Loader2 } from "lucide-react";
+import { Star, ChevronLeft, Loader2, Plus, Minus } from "lucide-react";
 import { useBooking } from "@/hooks/useBooking";
 import { Experience } from "@/types/booking";
+import { cn } from "@/lib/utils";
+import { Header } from "@/components/Header";
 
 const ExperienceDetails = () => {
   const { id } = useParams();
@@ -14,6 +16,24 @@ const ExperienceDetails = () => {
   const [experience, setExperience] = useState<Experience | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [quantity, setQuantity] = useState(1);
+
+  // Mock dates and times
+  const availableDates = [
+    { date: "2025-11-01", label: "Nov 1" },
+    { date: "2025-11-02", label: "Nov 2" },
+    { date: "2025-11-03", label: "Nov 3" },
+    { date: "2025-11-04", label: "Nov 4" },
+  ];
+
+  const availableTimes = [
+    { time: "09:00 AM", slots: 5 },
+    { time: "12:00 PM", slots: 3 },
+    { time: "03:00 PM", slots: 0 },
+    { time: "06:00 PM", slots: 8 },
+  ];
 
   useEffect(() => {
     if (!id) return;
@@ -35,13 +55,21 @@ const ExperienceDetails = () => {
     fetchExperience();
   }, [id]);
 
-  const handleBookNow = () => {
-    if (!experience) return;
-    setBookingDetails({ experience_id: experience.id, guests: 1 });
-    navigate(`/experience/${experience.id}/select-date`);
+  const handleConfirm = () => {
+    if (!experience || !selectedDate || !selectedTime) return;
+    setBookingDetails({ 
+      experience_id: experience.id, 
+      guests: quantity,
+      date: selectedDate,
+      time_slot_id: selectedTime
+    });
+    navigate(`/experience/${experience.id}/checkout`);
   };
 
-  // Loading State
+  const subtotal = experience ? experience.price * quantity : 0;
+  const tax = subtotal * 0.18;
+  const total = subtotal + tax;
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-muted-foreground">
@@ -51,7 +79,6 @@ const ExperienceDetails = () => {
     );
   }
 
-  // Error or Missing Data
   if (error || !experience) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -66,93 +93,156 @@ const ExperienceDetails = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      <Header />
+      
       <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-4 flex items-center gap-3">
           <Button
             variant="ghost"
+            size="icon"
             onClick={() => navigate("/")}
-            className="mb-2"
           >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Back to Experiences
+            <ChevronLeft className="w-5 h-5" />
           </Button>
+          <h2 className="text-xl font-semibold">Details</h2>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Image */}
-          <div>
-            <img
-              src={experience.image}
-              alt={experience.title}
-              className="w-full rounded-lg object-cover aspect-video"
-            />
+        <div className="grid lg:grid-cols-10 gap-8">
+          {/* LEFT SIDE - 70% */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Image */}
+            <div className="w-full overflow-hidden rounded-lg">
+              <img
+                src={experience.image}
+                alt={experience.title}
+                className="w-full object-cover aspect-video"
+              />
+            </div>
+
+            {/* Title & Description */}
+            <div className="space-y-3">
+              <h1 className="text-3xl font-bold">{experience.title}</h1>
+              <p className="text-muted-foreground">{experience.description}</p>
+              
+              {/* Rating & Reviews */}
+              <div className="flex items-center gap-2 text-sm">
+                <Star className="w-4 h-4 fill-accent text-accent" />
+                <span className="font-semibold">{experience.rating}</span>
+                <span className="text-muted-foreground">({experience.reviews} reviews)</span>
+              </div>
+            </div>
+
+            {/* Select Date */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg">Select Date</h3>
+              <div className="grid grid-cols-4 gap-2">
+                {availableDates.map((d) => (
+                  <Card
+                    key={d.date}
+                    className={cn(
+                      "p-3 text-center cursor-pointer transition-all hover:border-accent",
+                      selectedDate === d.date && "border-accent bg-accent/5"
+                    )}
+                    onClick={() => setSelectedDate(d.date)}
+                  >
+                    <div className="font-medium">{d.label}</div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Select Time */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg">Select Time</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {availableTimes.map((t) => (
+                  <Card
+                    key={t.time}
+                    className={cn(
+                      "p-3 cursor-pointer transition-all",
+                      t.slots === 0 && "opacity-50 cursor-not-allowed",
+                      selectedTime === t.time && "border-accent bg-accent/5"
+                    )}
+                    onClick={() => t.slots > 0 && setSelectedTime(t.time)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{t.time}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {t.slots === 0 ? "Sold Out" : `${t.slots} slots left`}
+                      </span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground">All times are IST</p>
+            </div>
+
+            {/* About */}
+            <div className="space-y-2">
+              <h3 className="font-semibold text-lg">About</h3>
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  Experience an unforgettable journey with professional guides and all necessary equipment included.
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Details */}
-          <div className="space-y-6">
-            {/* Info Section */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Star className="w-5 h-5 fill-accent text-accent" />
-                <span className="font-semibold">{experience.rating}</span>
-                <span className="text-muted-foreground">
-                  ({experience.reviews} reviews)
-                </span>
-              </div>
-              <h1 className="text-4xl font-bold mb-4">{experience.title}</h1>
-              <p className="text-lg text-muted-foreground">{experience.description}</p>
-            </div>
-
-            {/* Price & Info */}
-            <Card className="p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="w-5 h-5" />
-                  <span>{experience.duration}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="w-5 h-5" />
-                  <span>{experience.location}</span>
-                </div>
+          {/* RIGHT SIDE - 30% */}
+          <div className="lg:col-span-3">
+            <Card className="sticky top-24 p-6 space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Starts at</p>
+                <p className="text-3xl font-bold">${experience.price}</p>
               </div>
 
-              <div className="border-t pt-4">
-                <div className="flex items-baseline justify-between mb-4">
-                  <span className="text-3xl font-bold">${experience.price}</span>
-                  <span className="text-muted-foreground">per person</span>
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Quantity</p>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                  <span className="text-lg font-semibold w-8 text-center">{quantity}</span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
                 </div>
-                <Button onClick={handleBookNow} className="w-full" size="lg">
-                  Book Now
-                </Button>
               </div>
+
+              <div className="border-t pt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="font-medium">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Tax (18%)</span>
+                  <span className="font-medium">${tax.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-lg font-bold border-t pt-2">
+                  <span>Total</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleConfirm} 
+                className="w-full" 
+                size="lg"
+                disabled={!selectedDate || !selectedTime}
+              >
+                Confirm
+              </Button>
             </Card>
-
-            {/* Included Section */}
-            <div className="space-y-2">
-              <h3 className="font-semibold text-lg">What's included</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Professional guide</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>All necessary equipment</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Refreshments and snacks</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Photos of your experience</span>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
       </main>

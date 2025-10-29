@@ -1,7 +1,8 @@
 
 import { Experience } from "@/types/booking";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, MapPin, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface ExperienceCardProps {
@@ -30,18 +31,10 @@ export const ExperienceCard = ({ experience }: ExperienceCardProps) => {
         />
       </div>
 
-      <CardContent className="p-4 space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-lg leading-tight">
-            {experience.title}
-          </h3>
-          {experience.rating && (
-            <div className="flex items-center gap-1 text-sm font-medium shrink-0">
-              <Star className="w-4 h-4 fill-accent text-accent" />
-              <span>{Number(experience.rating).toFixed(1)}</span>
-            </div>
-          )}
-        </div>
+      <CardContent className="p-4 space-y-3">
+        <h3 className="font-semibold text-lg leading-tight">
+          {experience.title}
+        </h3>
 
         {experience.description && (
           <p className="text-sm text-muted-foreground line-clamp-2">
@@ -49,28 +42,18 @@ export const ExperienceCard = ({ experience }: ExperienceCardProps) => {
           </p>
         )}
 
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          {experience.location && (
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              <span>{experience.location}</span>
-            </div>
-          )}
-          {experience.duration && (
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              <span>{experience.duration}</span>
-            </div>
-          )}
-        </div>
+        {experience.location && (
+          <div className="inline-flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-sm text-muted-foreground">
+            <MapPin className="w-4 h-4" />
+            <span>{experience.location}</span>
+          </div>
+        )}
 
         <div className="flex items-center justify-between pt-2">
-          {experience.reviews !== undefined && (
-            <div className="text-sm text-muted-foreground">
-              {experience.reviews} reviews
-            </div>
-          )}
           <div className="text-xl font-bold">${experience.price}</div>
+          <Button variant="default" size="sm">
+            View Details
+          </Button>
         </div>
       </CardContent>
     </Card>
