@@ -28,7 +28,7 @@ const Confirmation = () => {
         const data={   // PostGre failed in Render
 
           'id':1, // to avoid wrong scree,
-          'experience_id':1  ,
+          'experience_id':'Sunset Beach Yoga'  ,
           'date': 'Nov 3',
           'time': '06:00 PM',
           'guests': 2,
