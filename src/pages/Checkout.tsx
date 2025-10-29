@@ -71,7 +71,6 @@ const Checkout = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           experience_id:id,
-          timeslot_id:bookingDetails.time_slot_id, 
           date:bookingDetails.date, 
           time:bookingDetails.time, 
           customer_name:name, 
@@ -82,7 +81,7 @@ const Checkout = () => {
 
       if (!response.ok) throw new Error("Booking failed");
       const data = await response.json();
-      data['bookingId']=1;
+      // data['bookingId']=1;
       toast.success("Booking successful!");
       navigate(`/confirmation/${data.bookingId}`);
     } catch (err) {

@@ -61,7 +61,8 @@ const ExperienceDetails = () => {
       experience_id: experience.id, 
       guests: quantity,
       date: selectedDate,
-      time_slot_id: selectedTime
+      time: selectedTime,
+      totalPrice:total
     });
     navigate(`/experience/${experience.id}/checkout`);
   };
