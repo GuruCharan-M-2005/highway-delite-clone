@@ -17,15 +17,7 @@ const SelectTime = () => {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>();
-
-  // 👇 Redirect to "/" if user refreshed the page
-  useEffect(() => {
-    const navType = performance.getEntriesByType("navigation")[0]?.type;
-    if (navType === "reload") {
-      navigate("/", { replace: true });
-    }
-  }, [navigate]);
-
+z
   useEffect(() => {
     if (!id || !bookingDetails.date) return;
 
