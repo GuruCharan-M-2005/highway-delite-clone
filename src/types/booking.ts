@@ -30,7 +30,7 @@ export interface TimeSlot {
 export interface BookingDetails {
   experience_id: string; // matches backend DB field
   date: string;          // ISO string (yyyy-mm-dd)
-  time_slot_id: string;  // reference to selected slot
+  time: string;  // reference to selected slot
   guests: number;        // number of participants
 }
 
