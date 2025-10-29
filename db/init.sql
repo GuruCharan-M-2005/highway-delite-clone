@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS  timeslots (
 CREATE TABLE IF NOT EXISTS  bookings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   experience_id TEXT NOT NULL REFERENCES experiences(id),
-  -- timeslot_id TEXT NOT NULL REFERENCES timeslots(id),
+  timeslot_id TEXT NOT NULL REFERENCES timeslots(id),
   date DATE NOT NULL,
   time TEXT NOT NULL,
   customer_name TEXT NOT NULL,
