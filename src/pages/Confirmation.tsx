@@ -32,7 +32,7 @@ const Confirmation = () => {
           'date': 'Nov 3',
           'time': '06:00 PM',
           'guests': 2,
-          'totalPrice':'$ 5400',
+          'totalPrice':5400,
           'name': "John Doe",
           'email': "johndoe@gmail.com",
           'phone': "6534866548",

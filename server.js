@@ -47,8 +47,8 @@ app.get("/api/experiences/:id", async (req, res) => {
 
 // Book a slot
 app.post("/api/bookings", async (req, res) => {
-  const { experience_id, timeslot_id, date, time, customer_name, customer_email, seats } = req.body;
-  if (!experience_id || !timeslot_id || !customer_name || !customer_email){
+  const { experience_id, date, time, customer_name, customer_email, amount } = req.body;
+  if (!experience_id || !customer_name || !customer_email){
     return res.status(400).json({ error: "Missing fields" });
   }
   return res.status(201).json({ message: "Booked successfully" });
