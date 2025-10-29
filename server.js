@@ -45,83 +45,83 @@ app.get("/api/experiences/:id", async (req, res) => {
   res.json({ experience: exp, date, timeslots: slots });
 });
 
-// Book a slot
-app.post("/api/bookings", async (req, res) => {
-  const { experience_id, timeslot_id, date, time, customer_name, customer_email, seats } = req.body;
-  if (!experience_id || !timeslot_id || !customer_name || !customer_email){
-    return res.status(400).json({ error: "Missing fields" });
-  }
-  return res.status(201).json({ message: "Booked successfully" });
-});
-
-// To track booking
-app.get("/api/bookings/:id", async (req, res) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.status(400).json({ error: "Booking ID is required" });
-  }    
-  return res.status(200).json({ message: "Booking Completed" });
-});
-
-// To book a slot
+// // Book a slot
 // app.post("/api/bookings", async (req, res) => {
 //   const { experience_id, timeslot_id, date, time, customer_name, customer_email, seats } = req.body;
-//   if (!experience_id || !timeslot_id || !customer_name || !customer_email) {
+//   if (!experience_id || !timeslot_id || !customer_name || !customer_email){
 //     return res.status(400).json({ error: "Missing fields" });
 //   }
-//   const client = await pool.connect();
-//   try {
-//     await client.query("BEGIN");
-//     const tsResult = await client.query("SELECT * FROM timeslots WHERE id=$1 FOR UPDATE", [timeslot_id]);
-//     const ts = tsResult.rows[0];
-//     if (!ts) throw new Error("Timeslot not found");
-//     if (ts.spots_left < seats) throw new Error("Not enough spots left");
-//     // Update spots
-//     await client.query("UPDATE timeslots SET spots_left=$1 WHERE id=$2", [
-//       ts.spots_left - seats,
-//       timeslot_id,
-//     ]);
-//     // Create booking record
-//     const bookingId = uuidv4();
-//     await client.query(
-//       "INSERT INTO bookings (id, experience_id, timeslot_id, date, time, customer_name, customer_email, seats) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
-//       [bookingId, experience_id, timeslot_id, date, time, customer_name, customer_email, seats]
-//     );
-//     await client.query("COMMIT");
-//     return res.status(201).json({ bookingId, message: "Booked successfully" });
-//   } catch (err) {
-//     await client.query("ROLLBACK");
-//     return res.status(400).json({ error: err.message });
-//   } finally {
-//     client.release();
-//   }
+//   return res.status(201).json({ message: "Booked successfully" });
 // });
 
-// To track booking ID
+// // To track booking
 // app.get("/api/bookings/:id", async (req, res) => {
 //   const { id } = req.params;
-//   // Validate input
 //   if (!id) {
 //     return res.status(400).json({ error: "Booking ID is required" });
-//   }
-//   const client = await pool.connect();
-//   try {
-//     // Look up the booking
-//     const result = await client.query("SELECT * FROM bookings WHERE id = $1", [id]);
-//     const booking = result.rows[0];
-
-//     if (!booking) {
-//       return res.status(404).json({ error: "Booking not found" });
-//     }
-//     // ✅ Found — return booking details
-//     return res.status(200).json({ booking });
-//   } catch (err) {
-//     console.error("Error fetching booking:", err);
-//     return res.status(500).json({ error: "Internal server error" });
-//   } finally {
-//     client.release();
-//   }
+//   }    
+//   return res.status(200).json({ message: "Booking Completed" });
 // });
+
+// To book a slot
+app.post("/api/bookings", async (req, res) => {
+  const { experience_id, timeslot_id, date, time, customer_name, customer_email, seats } = req.body;
+  if (!experience_id || !timeslot_id || !customer_name || !customer_email) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const tsResult = await client.query("SELECT * FROM timeslots WHERE id=$1 FOR UPDATE", [timeslot_id]);
+    const ts = tsResult.rows[0];
+    if (!ts) throw new Error("Timeslot not found");
+    if (ts.spots_left < seats) throw new Error("Not enough spots left");
+    // Update spots
+    await client.query("UPDATE timeslots SET spots_left=$1 WHERE id=$2", [
+      ts.spots_left - seats,
+      timeslot_id,
+    ]);
+    // Create booking record
+    const bookingId = uuidv4();
+    await client.query(
+      "INSERT INTO bookings (id, experience_id, timeslot_id, date, time, customer_name, customer_email, seats) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
+      [bookingId, experience_id, timeslot_id, date, time, customer_name, customer_email, seats]
+    );
+    await client.query("COMMIT");
+    return res.status(201).json({ bookingId, message: "Booked successfully" });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    return res.status(400).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+// To track booking ID
+app.get("/api/bookings/:id", async (req, res) => {
+  const { id } = req.params;
+  // Validate input
+  if (!id) {
+    return res.status(400).json({ error: "Booking ID is required" });
+  }
+  const client = await pool.connect();
+  try {
+    // Look up the booking
+    const result = await client.query("SELECT * FROM bookings WHERE id = $1", [id]);
+    const booking = result.rows[0];
+
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+    // ✅ Found — return booking details
+    return res.status(200).json({ booking });
+  } catch (err) {
+    console.error("Error fetching booking:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  } finally {
+    client.release();
+  }
+});
 
 // ---- SERVE FRONTEND BUILD ----
 const __filename = fileURLToPath(import.meta.url);
